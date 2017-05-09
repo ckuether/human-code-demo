@@ -1,36 +1,58 @@
 import { DNAModelPoint } from './DNAModelPoint';
 
 export class DNAModel {
+
     private modelPoints: Array<DNAModelPoint>
+    private circleRadius: number;
+    private lineLength: number;
 
     constructor(){
         this.modelPoints = [];
+        this.circleRadius = 10;
+        this.lineLength = 20;
 
         this.initDataPoints();
     }
 
     initDataPoints(){
+        let angle = 360/13;
+
+        let changeInX = 0; //track change in X dist from origin
         for(let i = 0; i < 39; i++){
             let dnaPoint = new DNAModelPoint();
 
-            let y = 28*Math.cos(27.7 * i)
-            let z = 28*Math.sin(27.7 * i)
+            let initYVal = this.lineLength + this.circleRadius;
 
-            let dx = (46 + i*16);
-            let dy1 = 200 + y;
-            let dy2 = 200 - y;
-            let dz1 = z;
-            let dz2 = -z;
+            let y = Math.abs(initYVal*Math.cos(angle * i));
+            let z = 8*Math.sin(angle * i);
 
-            dnaPoint.point1 = [dx, dy1, dz1];
-            dnaPoint.point2 = [dx, dy2, dz2];
+            let prevXVal: number = 30;
+            let prevYVal: number = initYVal;
+
+            if(this.modelPoints.length != 0){
+                prevXVal = this.modelPoints[i-1].getX();
+                prevYVal = this.modelPoints[i-1].getY1() - 200;
+            }
+
+            //  Equation to find next X Value
+            //
+            //  x = sqrt(circleDiameter^2 - (Yprev - Ythis)^2)
+            let dx = Math.sqrt(Math.pow(2*this.circleRadius, 2) - Math.pow(prevYVal - y, 2));
+
+            let x = (prevXVal + dx);
+            let y1 = 200 + y;
+            let y2 = 200 - y;
+            let z1 = z;
+            let z2 = -z;
+
+            dnaPoint.point1 = [x, y1, z1];
+            dnaPoint.point2 = [x, y2, z2];
 
             this.modelPoints.push(dnaPoint);
         }
     }
 
     getCircleDataPoints(): Array<[number, number, number]>{
-        debugger;
         let circlePoints: Array<[number,number,number]> = [];
 
         for(let modelPoint of this.modelPoints){
@@ -45,5 +67,9 @@ export class DNAModel {
 
     getModelPoints(): Array<DNAModelPoint>{
         return this.modelPoints;
+    }
+
+    getCircleRadius(): number {
+        return this.circleRadius;
     }
 }

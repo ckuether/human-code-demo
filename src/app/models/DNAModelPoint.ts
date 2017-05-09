@@ -6,12 +6,8 @@ export class DNAModelPoint {
 
     }
 
-    getX1(): number {
+    getX(): number {
         return this.point1[0];
-    }
-
-    getX2(): number {
-        return this.point2[0];
     }
 
     getY1(): number {

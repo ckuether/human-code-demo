@@ -49,24 +49,23 @@ export class DnaVisualComponent implements OnInit, OnDestroy {
 
             this.dnaModel = new DNAModel();
 
-            d3Svg.selectAll<SVGCircleElement, any>('circle')
-            .data(this.dnaModel.getCircleDataPoints())
-            .enter().append<SVGCircleElement>('circle')
-            .attr('cx', function(d) {return d[0]; })
-            .attr('cy', function(d) {return d[1]; })
-            .attr('r', 8)
-            .attr('fill', function(d, index) {return colors[index%13]; })
-
             d3Svg.selectAll<SVGLineElement, any>('line')
             .data(this.dnaModel.getModelPoints())
             .enter().append<SVGRectElement>('line')
-            .attr('x1', function(d) {return d.getX1()})
-            .attr('x2', function(d) {return d.getX2()})
+            .attr('x1', function(d) {return d.getX()})
+            .attr('x2', function(d) {return d.getX()})
             .attr('y1', function(d) {return d.getY1()})
             .attr('y2', function(d) {return d.getY2()})
             .attr('stroke', function(d, index) {return colors[index%13]})
             .attr('stroke-width', 2)
 
+            d3Svg.selectAll<SVGCircleElement, any>('circle')
+            .data(this.dnaModel.getCircleDataPoints())
+            .enter().append<SVGCircleElement>('circle')
+            .attr('cx', function(d) {return d[0]; })
+            .attr('cy', function(d) {return d[1]; })
+            .attr('r', this.dnaModel.getCircleRadius())
+            .attr('fill', function(d, index) {return colors[index%13]; })
 
         }
     }
