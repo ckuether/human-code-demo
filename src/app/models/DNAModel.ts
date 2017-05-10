@@ -1,5 +1,7 @@
 import { DNAModelPoint } from './DNAModelPoint';
 
+const MID_POINT = 200;
+
 export class DNAModel {
 
     private modelPoints: Array<DNAModelPoint>
@@ -7,6 +9,7 @@ export class DNAModel {
     private lineLength: number;
 
     private initLength: number;
+
 
     constructor(){
         this.modelPoints = [];
@@ -24,19 +27,15 @@ export class DNAModel {
         for(let i = 0; i < 39; i++){
             let dnaPoint = new DNAModelPoint();
 
-            // let initLength = this.lineLength + this.circleRadius;
-
-            // let y = Math.abs(initLength*Math.cos(angle * i));
-            let y = this.getNextYVal(angle, i)
-            // let z = initLength*Math.sin(angle * i)
-            let z = this.getNextZVal(angle, i);
+            let y = this.getNextYVal(angle * i)
+            let z = this.getNextZVal(angle * i);
 
             let prevXVal: number = 30;
             let prevYVal: number = this.initLength;
 
             if(this.modelPoints.length != 0){
                 prevXVal = this.modelPoints[i-1].getX();
-                prevYVal = this.modelPoints[i-1].getY1() - 200;
+                prevYVal = this.modelPoints[i-1].getY1() - MID_POINT;
             }
 
             //  Equation to find next X Value
@@ -45,10 +44,8 @@ export class DNAModel {
             let dx = Math.sqrt(Math.pow(2*this.circleRadius, 2) - Math.pow(prevYVal - y, 2));
 
             let x = (prevXVal + dx);
-            let y1 = 200 + y;
-            let y2 = 200 - y;
-            // let z1 = Math.pow((z+initLength)/(2*initLength), 1/10);
-            // let z2 = Math.pow((-z+initLength)/(2*initLength), 1/10);
+            let y1 = MID_POINT + y;
+            let y2 = MID_POINT - y;
             let z1 = this.transformZVal(z);
             let z2 = this.transformZVal(-z);
 
@@ -72,22 +69,55 @@ export class DNAModel {
         return circlePoints;
     }
 
-    // updateDataPoints(){
+    updateDataPoints(){
+        debugger;
+        let angle = 360/60;
 
-    //     let angle = 360/60;
+        for(let modelPoint of this.modelPoints){
 
-    //     for(let modelPoint of this.modelPoints){
+            let prevAngle: number;
+            // let prev
+            let prevY = modelPoint.getY1();
+            let prevZ = this.untransformZVal(modelPoint.getZ1());
 
-    //     }
+            if(prevZ != 0 && prevY != MID_POINT){
+                prevAngle = Math.atan(prevZ/(prevY - MID_POINT));
+            }else if(prevZ == 0 && prevY > MID_POINT){
+                prevAngle = 0;
+            }else if(prevZ == 0 && prevY < MID_POINT){
+                prevAngle = 180;
+            }else if(prevY == MID_POINT && prevZ > 0){
+                prevAngle = 90;
+            }else if(prevY == MID_POINT && prevZ < 0){
+                prevAngle = 270;
+            }
 
-    // }
+            let y = this.getNextYVal(prevAngle + angle);
+            let z = this.getNextZVal(prevAngle + angle);
 
-    getNextYVal(angle: number, index: number): number{
-        return Math.abs(this.initLength*Math.cos(angle * index));
+            modelPoint.setY1(MID_POINT + y);
+            modelPoint.setY2(MID_POINT - y);
+            modelPoint.setZ1(this.transformZVal(z));
+            modelPoint.setZ2(this.transformZVal(-z));
+
+        }
+
     }
 
-    getNextZVal(angle: number, index: number): number{
-        return this.initLength*Math.sin(angle * index);
+    getNextYVal(angle: number): number{
+        return Math.abs(this.initLength*Math.cos(angle));
+    }
+
+    getNextZVal(angle: number): number{
+        return this.initLength*Math.sin(angle);
+    }
+
+    getModelPoints(): Array<DNAModelPoint>{
+        return this.modelPoints;
+    }
+
+    getCircleRadius(): number {
+        return this.circleRadius;
     }
 
     /*
@@ -98,11 +128,11 @@ export class DNAModel {
         return Math.pow((z+this.initLength)/(2*this.initLength), 1/10);
     }
 
-    getModelPoints(): Array<DNAModelPoint>{
-        return this.modelPoints;
+    untransformZVal(z: number): number{
+        z = Math.pow(z, 10);
+        z = z*2*this.initLength;
+        z = z - 28;
+        return z;
     }
 
-    getCircleRadius(): number {
-        return this.circleRadius;
-    }
 }
