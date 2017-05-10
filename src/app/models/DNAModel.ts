@@ -1,6 +1,6 @@
 import { DNAModelPoint } from './DNAModelPoint';
 
-const MID_POINT = 200;
+const MID_POINT = 100;
 
 export class DNAModel {
 
@@ -30,20 +30,7 @@ export class DNAModel {
             let y = this.getNextYVal(angle * i)
             let z = this.getNextZVal(angle * i);
 
-            let prevXVal: number = 30;
-            let prevYVal: number = this.initLength;
-
-            if(this.modelPoints.length != 0){
-                prevXVal = this.modelPoints[i-1].getX();
-                prevYVal = this.modelPoints[i-1].getY1() - MID_POINT;
-            }
-
-            //  Equation to find next X Value
-            //
-            //  x = sqrt(circleDiameter^2 - (Yprev - Ythis)^2)
-            let dx = Math.sqrt(Math.pow(2*this.circleRadius, 2) - Math.pow(prevYVal - y, 2));
-
-            let x = (prevXVal + dx);
+            let x = (this.getPrevPointX(i) + this.getDx(i, y));
             let y1 = MID_POINT + y;
             let y2 = MID_POINT - y;
             let z1 = this.transformZVal(z);
@@ -97,21 +84,7 @@ export class DNAModel {
             let y = this.getNextYVal(prevAngle + angle);
             let z = this.getNextZVal(prevAngle + angle);
 
-            let prevXVal: number = 30;
-            let prevYVal: number = this.initLength;
-            let dx: number = 2 * this.circleRadius;
-
-            if(i != 0){
-                prevXVal = this.modelPoints[i-1].getX();
-                prevYVal = this.modelPoints[i-1].getY1() - MID_POINT;
-                //  Equation to find next X Value
-                //
-                //  x = sqrt(circleDiameter^2 - (Yprev - Ythis)^2)
-                dx = Math.sqrt(Math.pow(2*this.circleRadius, 2) - Math.pow(prevYVal - y, 2));
-            }
-
-            this.modelPoints[i].setX(prevXVal + dx);
-
+            this.modelPoints[i].setX(this.getPrevPointX(i) + this.getDx(i,y));
             this.modelPoints[i].setY1(MID_POINT + y);
             this.modelPoints[i].setY2(MID_POINT - y);
             this.modelPoints[i].setZ1(this.transformZVal(z));
@@ -121,12 +94,50 @@ export class DNAModel {
 
     }
 
+    //Calculates new Y Value based angle input
     getNextYVal(angle: number): number{
         return this.initLength*Math.cos(angle * Math.PI/180);
     }
 
     getNextZVal(angle: number): number{
         return this.initLength*Math.sin(angle * Math.PI/180);
+    }
+
+    /*
+     * This method calculates the change in x value based off location of
+     * previous Model Points Y axis value and current Y axis Value
+     * dx = sqrt(circleDiameter^2 - (Yprev - Ythis)^2)
+    */
+    getDx(index: number, y: number): number{
+        let dx: number = 2 * this.circleRadius;
+
+        if(index != 0){
+            dx = Math.sqrt(Math.pow(2*this.circleRadius, 2) - Math.pow(this.getPrevPointY(index) - y, 2));
+        }
+
+        return dx;
+    }
+
+    // Gets previous Model Points x axis
+    getPrevPointX(index: number): number{
+        let prevXVal: number = 30;
+
+        if(index != 0){
+            prevXVal = this.modelPoints[index-1].getX();
+        }
+
+        return prevXVal;
+    }
+
+    // Gets previous Model POints Y axis
+    getPrevPointY(index: number): number{
+        let prevYVal: number = this.initLength;
+
+        if(index != 0){
+            prevYVal = this.modelPoints[index-1].getY1() - MID_POINT;
+        }
+
+        return prevYVal;
     }
 
     getModelPoints(): Array<DNAModelPoint>{
