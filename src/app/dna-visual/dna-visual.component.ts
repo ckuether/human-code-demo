@@ -31,22 +31,29 @@ export class DnaVisualComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.dnaModel = new DNAModel();
 
-        let self = this;
-        let d3 = this.d3;
         let d3ParentElement: Selection<HTMLElement, any, null, undefined>;
-        let d3Svg: Selection<SVGSVGElement, any, null, undefined>;
 
-        let colors: string[];
+        d3ParentElement = this.d3.select(this.parentNativeElement);
+        this.d3Svg = d3ParentElement.select<SVGSVGElement>('svg');
 
-        d3ParentElement = d3.select(this.parentNativeElement);
-        d3Svg = this.d3Svg = d3ParentElement.select<SVGSVGElement>('svg');
+        // setInterval(this.draw(), 25);
+        for(let i = 0; i < 10; i++){
+            // if(i == 9)
+            //     debugger;
+            this.dnaModel.updateDataPoints()
+        }
+        // this.dnaModel.updateDataPoints();
+        this.draw();
 
-        colors = ['#00ccff','#0099ff', '#0066ff', '#3366ff', '#6666ff', '#9966ff', '#cc66ff', '#ff66ff', '#ff66cc' , '#ff6699', '#ff6666', '#ff6633', '#ff9966'];
+    }
 
+    draw(){
+        // this.d3.
+
+        let colors = ['#00ccff','#0099ff', '#0066ff', '#3366ff', '#6666ff', '#9966ff', '#cc66ff', '#ff66ff', '#ff66cc' , '#ff6699', '#ff6666', '#ff6633', '#ff9966'];
         let circleRadius = this.dnaModel.getCircleRadius();
 
-
-        d3Svg.selectAll<SVGLineElement, any>('line')
+        this.d3Svg.selectAll<SVGLineElement, any>('line')
         .data(this.dnaModel.getModelPoints())
         .enter().append<SVGRectElement>('line')
         .attr('x1', function(d) {return d.getX()})
@@ -57,7 +64,7 @@ export class DnaVisualComponent implements OnInit, OnDestroy {
         .attr('stroke-width', 2)
         .attr('opacity', function(d) {return  d.getZ1() >= d.getZ2() ? d.getZ2() : d.getZ1() })
 
-        d3Svg.selectAll<SVGCircleElement, any>('circle')
+        this.d3Svg.selectAll<SVGCircleElement, any>('circle')
         .data(this.dnaModel.getCircleDataPoints())
         .enter().append<SVGCircleElement>('circle')
         .attr('cx', function(d) {return d[0]; })
@@ -65,6 +72,7 @@ export class DnaVisualComponent implements OnInit, OnDestroy {
         .attr('r', function(d) { return circleRadius * d[2]; })
         .attr('fill', function(d, index) {return colors[index%13]; })
         .attr('fill-opacity', function(d) {return d[2]})
+
 
     }
 }

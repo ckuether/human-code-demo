@@ -7,6 +7,11 @@ export class DNAModelPoint {
     constructor(){
     }
 
+    setX(x: number){
+        this.point1[x];
+        this.point2[-x]
+    }
+
     getX(): number {
         return this.point1[0];
     }
