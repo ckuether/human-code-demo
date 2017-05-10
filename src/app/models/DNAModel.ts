@@ -110,9 +110,6 @@ export class DNAModel {
                 dx = Math.sqrt(Math.pow(2*this.circleRadius, 2) - Math.pow(prevYVal - y, 2));
             }
 
-
-
-
             this.modelPoints[i].setX(prevXVal + dx);
 
             this.modelPoints[i].setY1(MID_POINT + y);
@@ -145,11 +142,11 @@ export class DNAModel {
      * Opacity and Radius are calculated based off this value
      */
      transformZVal(z: number): number{
-         return Math.pow((z+this.initLength)/(2*this.initLength), 1/8);
+         return Math.pow((z+this.initLength)/(2*this.initLength), 1/6);
      }
 
      untransformZVal(z: number): number{
-         z = Math.pow(z, 8);
+         z = Math.pow(z, 6);
          z = z*2*this.initLength;
          z = z - this.initLength;
          return z;
