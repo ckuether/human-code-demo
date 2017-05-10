@@ -48,6 +48,7 @@ export class DnaVisualComponent implements OnInit, OnDestroy {
             colors = ['#00ccff','#0099ff', '#0066ff', '#3366ff', '#6666ff', '#9966ff', '#cc66ff', '#ff66ff', '#ff66cc' , '#ff6699', '#ff6666', '#ff6633', '#ff9966'];
 
             this.dnaModel = new DNAModel();
+            let circleRadius = this.dnaModel.getCircleRadius();
 
             d3Svg.selectAll<SVGLineElement, any>('line')
             .data(this.dnaModel.getModelPoints())
@@ -58,14 +59,16 @@ export class DnaVisualComponent implements OnInit, OnDestroy {
             .attr('y2', function(d) {return d.getY2()})
             .attr('stroke', function(d, index) {return colors[index%13]})
             .attr('stroke-width', 2)
+            .attr('opacity', function(d) {return  d.getZ1() >= d.getZ2() ? d.getZ2() : d.getZ1() })
 
             d3Svg.selectAll<SVGCircleElement, any>('circle')
             .data(this.dnaModel.getCircleDataPoints())
             .enter().append<SVGCircleElement>('circle')
             .attr('cx', function(d) {return d[0]; })
             .attr('cy', function(d) {return d[1]; })
-            .attr('r', this.dnaModel.getCircleRadius())
+            .attr('r', function(d) { return circleRadius * d[2]; })
             .attr('fill', function(d, index) {return colors[index%13]; })
+            .attr('fill-opacity', function(d) {return d[2]})
 
         }
     }
