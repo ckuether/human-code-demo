@@ -8,11 +8,13 @@ import { AppComponent } from './app.component';
 import { DnaVisualComponent } from './dna-visual/dna-visual.component';
 
 import { D3Service } from 'd3-ng2-service';
+import { CountdownComponent } from './countdown/countdown.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DnaVisualComponent
+    DnaVisualComponent,
+    CountdownComponent
   ],
   imports: [
     BrowserModule,

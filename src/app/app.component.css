@@ -24,3 +24,11 @@
     background-color: #6666ff;
     border-radius: 5px;
 }
+
+.launching-text{
+    width: 830px;
+    text-align: right;
+    font-size: 25px;
+    padding-top: 25px;
+    font-family: 'Patua One';
+}
